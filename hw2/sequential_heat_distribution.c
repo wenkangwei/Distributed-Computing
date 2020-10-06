@@ -99,9 +99,8 @@ void CopyNewToOld(float new[][mesh_cols], float old[][mesh_cols],
 		int rows, int cols)
 {
 // copy new computed array to old array
-//
-	for(int r=0; r <rows;r++){
-		for(int c=0; c<cols; c++){
+	for(int r=1; r <rows-1;r++){
+		for(int c=1; c<cols-1; c++){
 		old[r][c] = new[r][c];
 		}
 	}
