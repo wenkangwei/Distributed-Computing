@@ -17,7 +17,7 @@ int mesh_rows=10, mesh_cols=10;
 
 void CalculateNew(float new[][mesh_cols], float old[][mesh_cols], int source_cnt[2], int source_displ[2], int rows, int cols);
 void CopyNewToOld(float new[][mesh_cols], float old[][mesh_cols],int rows, int cols);
-void PrintGrid(float grid[][mesh_cols], int xsource, int ysource, int rows, int cols);
+void PrintGrid(float grid[][mesh_cols], int rows, int cols);
 void PrintImage(float grid[][mesh_cols], int rows, int cols);
 
 
@@ -31,17 +31,21 @@ int iter = 100;
 
 char flag_print = 0;
 
-if (argc >=2){
-// set parameters if given parameters
-	mesh_rows = atoi(argv[1]);
+if(argc >=2){
+	// the first input argument control the size of grid /mesh
 	mesh_cols = atoi(argv[1]);
-	printf("Mesh width: %d, height: %d ", mesh_cols, mesh_rows);
-	if (argc == 3){
-	iter = atoi(argv[2]);
-	printf("iterations: %d", iter);
+	mesh_rows = atoi(argv[1]);
+	if (argc>=3){
+		//the second input argument control the number of iteration
+		iter = atoi(argv[2]);
 	}
-	printf("\n");
+	if (argc>=4){
+		// the third input argument control if print buffer to test or not
+		flag_print = (char)atoi(argv[3]);
+	}
 }
+
+
 //define size of  a mesh and memory for the mesh
 float old_mesh[mesh_rows][mesh_cols];
 float new_mesh[mesh_rows][mesh_cols];
@@ -84,7 +88,7 @@ for(int i=0; i< iter;i++ ){
 	CopyNewToOld(new_mesh, old_mesh, mesh_rows, mesh_cols);
 	CalculateNew(new_mesh, old_mesh, fireplace_counts, fireplace_displ, mesh_rows, mesh_cols);
 	if (flag_print){
-	PrintGrid(new_mesh, 0,0,mesh_rows,mesh_cols);
+	PrintGrid(new_mesh, mesh_rows,mesh_cols);
 	}
 
 
@@ -124,7 +128,7 @@ void CalculateNew(float new[][mesh_cols], float old[][mesh_cols], int source_cnt
 }
 }
 
-void PrintGrid(float grid[][mesh_cols], int xsource, int ysource, int rows, int cols){
+void PrintGrid(float grid[][mesh_cols], int rows, int cols){
 	// print mesh value
 	for (int r=0; r<rows; r++){
 		for(int c=0; c<cols; c++){
@@ -156,7 +160,7 @@ void PrintImage(float grid[][mesh_cols], int rows, int cols){
 					color= colors[0];
 				}
 				else if(i == num_ranges && grid[r][c]<=color_range[num_ranges-1]){
-				color = colors[num_ranges-1];}
+				color = colors[num_ranges];}
 				else if(grid[r][c]<= color_range[i-1] && grid[r][c] >color_range[i]){
 				color = colors[i];
 				}

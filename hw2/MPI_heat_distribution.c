@@ -18,7 +18,7 @@
 int mesh_cols =20, mesh_rows = 20;
 
 void PrintImage(float grid[][mesh_cols], int rows, int cols);
-void PrintGrid(float grid[][mesh_cols], int xsource, int ysource, int rows, int cols);
+void PrintGrid(float grid[][mesh_cols], int rows, int cols);
 
 void CopyNewToOld(float new[][mesh_cols], float old[][mesh_cols],		int rows, int cols);
 
@@ -40,16 +40,22 @@ int iter = 100;
 char flag_print = 1;
 // parameter settings
 if(argc >=2){
+	// the first input argument control the size of grid /mesh
 	mesh_cols = atoi(argv[1]);
 	mesh_rows = atoi(argv[1]);
+	//the second input argument control the number of iteration
 	if (argc>=3){
 		iter = atoi(argv[2]);
 	}
+	// the third input argument control if print buffer to test or not
 	if(argc>=4){
 	flag_print = (char) atoi(argv[3]);
 	}
 }
+
+if(rank ==0){
 printf("Graph size: %d by %d, iterations:%d\n",mesh_rows,mesh_cols,iter);
+}
 
 //set temperature
 int edge_temp = 20;
@@ -83,6 +89,10 @@ for(int i =0; i< size;i++){
 	}
 	buffer_cnts[i] = workload[i]* mesh_cols;
 }
+//print information in order
+MPI_Barrier(MPI_COMM_WORLD);
+printf("Process: %d, partition size: %d by %d\n",rank, workload[rank],mesh_cols);
+
 //new_mesh: buffers with 2 rows of ghost points to stored new calculated data
 float new_mesh[workload[rank]+2][mesh_cols];
 float old_mesh[workload[rank]+2][mesh_cols];
@@ -144,7 +154,7 @@ for (int i =0;i < iter;i++){
 	//print buffer
 	if(flag_print){
 		printf("Process: %d\n",rank);
-		PrintGrid(new_mesh, 0, 0, workload[rank]+2, mesh_cols);	
+		PrintGrid(new_mesh, workload[rank]+2, mesh_cols);	
 	}
 }
 //synchronize all computing nodes and collect partial results to the result buffer
@@ -165,7 +175,7 @@ if(rank ==0){
 PrintImage(result, mesh_rows, mesh_cols);
  if(flag_print){
    printf("------------------------------------------\n");
-   PrintGrid(result, 0, 0, mesh_rows, mesh_cols);
+   PrintGrid(result, mesh_rows, mesh_cols);
  }
 }
 
@@ -207,7 +217,7 @@ void CopyNewToOld(float new[][mesh_cols], float old[][mesh_cols],
 	}
 }
 
-void PrintGrid(float grid[][mesh_cols], int xsource, int ysource, int rows, int cols){
+void PrintGrid(float grid[][mesh_cols],int rows, int cols){
 	// print mesh value
 	for (int r=0; r<rows; r++){
 		for(int c=0; c<cols; c++){
