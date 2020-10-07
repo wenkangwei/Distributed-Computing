@@ -194,7 +194,7 @@ for (int i =0;i < iter;i++){
 
 
 
-//synchronize all computing nodes and collect partial results to the result buffer
+//synchronize all processors and collect partial results to the result buffer
 MPI_Barrier(MPI_COMM_WORLD);
 int send_size = workload[rank]*mesh_cols;
 float send_buf[workload[rank]][mesh_cols];
