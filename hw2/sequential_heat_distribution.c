@@ -7,12 +7,17 @@
 //
 // 	mpicc sequential_heat_distribution.c -o sequential_heat_distribution
 //
-// or if using makefile
+// or if using makefile I write
 //
 // 	make sequential_heat_distribution
 //
 // Run this program with 1 cpu,  1000 x 1000 grid and 5000 iterations
-// 	mpiexec -n sequential_heat_distribution 1000 5000
+// 	mpiexec -n 1 sequential_heat_distribution 1000 5000
+//
+//Requirements:
+//	1. need to install mpi
+//	2. make sure you install  pnmtojpeg software in your computer, since I use 
+//	pnmtojpeg  tool to convert pnm image to jpeg image
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -48,6 +53,7 @@ int iter = 5000;
 //flag indicating if we want to print grid or not
 char flag_print = 0;
 
+//get inputs from terminal
 if(argc >=2){
 	// the first input argument control the size of grid /mesh
 	mesh_cols = atoi(argv[1]);
@@ -67,7 +73,9 @@ printf("Graph size: %d by %d, iterations: %d \n", mesh_rows,mesh_cols, iter);
 float old_mesh[mesh_rows][mesh_cols];
 float new_mesh[mesh_rows][mesh_cols];
 
-//define  a fireplace 
+
+
+//Define  a fireplace 
 //temperature of fireplace =300 degree Celsius
 float fireplace_temp = 300;
 // amount of rows and columns of fireplace
@@ -77,9 +85,7 @@ int fireplace_counts[] =  {1, mesh_cols * 0.4};
 // fireplace_disp[0]: y position. fireplace_disp[1]: x position
 int fireplace_displ[] = { 1,0.5*(mesh_cols- fireplace_counts[1])} ;
 
-
-
-//initialize interior of mesh and fireplace
+//Initialize interior of mesh and fireplace
 for(int c=0; c< mesh_cols;c++ ){
 	for(int r=0; r < mesh_rows;r++){
 		if (	r>= fireplace_displ[0] && 
@@ -155,7 +161,8 @@ void CalculateNew(float new[][mesh_cols], float old[][mesh_cols], int source_cnt
 			c >= source_displ[1] && 
 			c <(source_displ[1]+source_cnt[1])){
 		// Since temperature and position of heat source are fixed,
-		// just copy the heat source to new buffer
+		// just copy the heat source to new buffer and do nothing 
+		// to the pixels in heat source
 		new[r][c] = old[r][c];
 		}
 		else{
